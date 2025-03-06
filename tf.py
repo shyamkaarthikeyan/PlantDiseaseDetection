@@ -3,7 +3,8 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-st.set_page_config(page_title="Plant Disease Detection", page_icon="🌿")
+# Set page title, icon, and layout for responsiveness
+st.set_page_config(page_title="Plant Disease Detection", page_icon="🌿", layout="wide")
 
 # Load the TFLite model
 def load_tflite_model(model_path):
@@ -55,20 +56,48 @@ def predict_image_tflite(image_file):
 
     return pred_class, pred_confidence
 
+# Apply custom CSS for mobile-friendly styling
+st.markdown(
+    """
+    <style>
+        /* Make buttons and texts look better */
+        .stButton button {
+            width: 100%;
+            height: 50px;
+            font-size: 18px;
+            border-radius: 10px;
+        }
+        
+        /* Improve text readability */
+        .stTextInput input, .stFileUploader label {
+            font-size: 16px;
+        }
+        
+        /* Center elements */
+        .stApp {
+            text-align: center;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Streamlit UI
-st.title("Plant Disease Detection (TFLite Model)")
-st.write("Upload an image to classify plant diseases.")
+st.title("🌿 Plant Disease Detection")
+st.write("📸 Upload an image to classify plant diseases.")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Create a centered layout
+col1, col2, col3 = st.columns([1, 2, 1])  # Center content
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_container_width=True)
+with col2:
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-    if st.button("Predict"):
-        with st.spinner("Analyzing..."):
-            result, confidence = predict_image_tflite(uploaded_file)
-        st.success(f"Prediction: {result}")
-        st.info(f"Confidence: {confidence}")
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image", width=300)  # Limit width for mobile
 
-# Run the app using: streamlit run app_streamlit.py
+        if st.button("🔍 Predict"):
+            with st.spinner("Analyzing..."):
+                result, confidence = predict_image_tflite(uploaded_file)
+            st.success(f"✅ Prediction: {result}")
+            st.info(f"📊 Confidence: {confidence}")
