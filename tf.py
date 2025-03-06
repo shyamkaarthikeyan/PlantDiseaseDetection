@@ -141,3 +141,7 @@ if st.session_state.uploaded_file:
     if st.button("🔄 Try Another Image"):
         st.session_state.uploaded_file = None
         st.rerun()  # Refresh UI to allow a new upload
+
+# Footer
+st.markdown("---")
+st.markdown("<p style='text-align: center;'>🌱 Built with ❤️ using Streamlit</p>", unsafe_allow_html=True)
