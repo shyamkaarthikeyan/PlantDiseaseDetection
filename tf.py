@@ -23,7 +23,7 @@ class_names = [
 ]
 
 # Load the TFLite model
-model_path = r"C:\Users\shyam\Downloads\plant_Project_Vidhya\Project_Bobby\model.tflite"
+model_path = "model.tflite"
 interpreter = load_tflite_model(model_path)
 
 # Function to preprocess and predict
