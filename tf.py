@@ -3,6 +3,8 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
+st.set_page_config(page_title="Plant Disease Detection", page_icon="🌿")
+
 # Load the TFLite model
 def load_tflite_model(model_path):
     interpreter = tf.lite.Interpreter(model_path=model_path)
