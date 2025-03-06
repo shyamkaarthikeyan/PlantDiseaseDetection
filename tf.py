@@ -23,14 +23,10 @@ st.markdown("""
             height: auto;
             border-radius: 10px;
         }
-        .stSpinner {
-            font-size: 18px;
-            font-weight: bold;
-        }
     </style>
 """, unsafe_allow_html=True)
 
-# Load the TFLite model (Optimized for performance)
+# Load the TFLite model
 @st.cache_resource
 def load_tflite_model():
     interpreter = tf.lite.Interpreter(model_path="model.tflite")
@@ -52,31 +48,139 @@ class_names = [
     'Tomato_Yellow_Leaf_Curl_Virus'
 ]
 
-# Disease Resolutions
+# Disease Resolutions (Complete for all 28)
 disease_resolutions = {
+    "Background_without_leaves": [
+        "🌱 Check soil moisture levels and adjust watering.",
+        "🌞 Ensure the plant gets enough sunlight.",
+        "💨 Protect from strong winds that may cause leaf drop.",
+        "🛑 Monitor for pests or diseases."
+    ],
     "Eggplant_Aphids": [
-        "🌱 Spray neem oil or insecticidal soap to control aphids.",
-        "🐞 Encourage natural predators like ladybugs.",
-        "❌ Avoid excessive nitrogen fertilizers that attract aphids.",
-        "🪴 Use reflective mulches to repel aphids."
+        "🐞 Introduce ladybugs to eat aphids.",
+        "🌿 Use neem oil or insecticidal soap.",
+        "🚿 Spray leaves with water to remove aphids.",
+        "🌾 Avoid over-fertilizing to prevent aphid attraction."
     ],
-    "Tomato_Bacterial_spot": [
-        "🌾 Use disease-free seeds and resistant varieties.",
-        "🔬 Apply copper-based bactericides to slow spread.",
-        "🤲 Avoid working with wet plants to prevent bacterial spread.",
-        "🗑️ Remove and destroy infected plant debris."
+    "Eggplant_Cercospora Leaf Spot": [
+        "🍃 Remove infected leaves immediately.",
+        "🦠 Apply copper-based fungicide if needed.",
+        "💧 Water at the base to prevent leaf wetness.",
+        "🌱 Rotate crops to prevent reinfection."
     ],
-    "Tomato_Yellow_Leaf_Curl_Virus": [
-        "🐛 Control whiteflies as they spread the virus.",
-        "🍅 Use resistant tomato varieties when available.",
-        "🕸️ Cover young plants with insect netting.",
-        "🔥 Remove and destroy infected plants to prevent spread."
+    "Eggplant_Defect": [
+        "🛑 Check for nutrient imbalances.",
+        "💧 Maintain a consistent watering schedule.",
+        "🌞 Ensure adequate sunlight exposure.",
+        "🍂 Remove affected plant parts."
+    ],
+    "Eggplant_Flea Beetles": [
+        "🔥 Clear plant debris to remove beetle eggs.",
+        "🪴 Apply diatomaceous earth around plants.",
+        "🐞 Introduce beneficial insects like nematodes.",
+        "🌿 Use floating row covers to protect young plants."
+    ],
+    "Eggplant_Fresh": [
+        "✅ The plant is healthy.",
+        "🌱 Maintain regular watering and feeding.",
+        "☀️ Ensure proper sun exposure.",
+        "🍆 Harvest at the right time."
+    ],
+    "Eggplant_Leaf Wilt": [
+        "💧 Ensure proper watering without overwatering.",
+        "🌞 Provide good sun exposure.",
+        "🦠 Check for fungal infections and treat accordingly.",
+        "🐞 Control pests that may cause wilting."
+    ],
+    "Eggplant_Phytophthora Blight": [
+        "🛑 Remove infected plants to prevent spreading.",
+        "💧 Improve drainage to avoid waterlogging.",
+        "🌾 Rotate crops each season.",
+        "🦠 Apply fungicides like metalaxyl."
+    ],
+    "Eggplant_Powdery Mildew": [
+        "💨 Increase airflow around plants.",
+        "🦠 Use sulfur-based fungicides.",
+        "🌞 Expose plants to more sunlight.",
+        "🚫 Avoid overcrowding plants."
+    ],
+    "Eggplant_Tobacco Mosaic Virus": [
+        "🛑 Remove infected plants immediately.",
+        "👐 Disinfect tools after use.",
+        "🐞 Control insect vectors like aphids.",
+        "🦠 Grow virus-resistant varieties."
+    ],
+    "Okra_Alternaria Leaf Spot": [
+        "🍃 Remove affected leaves.",
+        "🦠 Apply fungicide if the infection spreads.",
+        "💨 Space plants for better airflow.",
+        "🌱 Rotate crops to reduce recurrence."
+    ],
+    "Okra_Cercospora Leaf Spot": [
+        "🌿 Prune leaves for better ventilation.",
+        "💧 Avoid wetting leaves while watering.",
+        "🦠 Use copper-based fungicides if needed.",
+        "🔥 Destroy infected plant debris."
+    ],
+    "Okra_Downy Mildew": [
+        "🌞 Increase sunlight exposure.",
+        "🦠 Apply organic fungicides if needed.",
+        "💨 Improve air circulation.",
+        "💧 Water early in the morning."
+    ],
+    "Okra_Healthy": [
+        "✅ Your okra plant is in great condition!",
+        "🌱 Maintain watering and fertilization.",
+        "☀️ Ensure sufficient sun exposure.",
+        "🍽️ Harvest regularly for better yield."
     ],
     "Okra_Leaf curly virus": [
-        "🚮 Remove and destroy infected plants immediately.",
-        "🐞 Control aphid populations as they spread the virus.",
-        "🪴 Use reflective mulch to deter aphids.",
-        "🚫 Avoid planting near virus-infected crops."
+        "🛑 Remove and destroy infected plants.",
+        "🐞 Control whiteflies, which spread the virus.",
+        "🕸️ Use insect-proof netting.",
+        "🌱 Grow virus-resistant okra varieties."
+    ],
+    "Okra_Phyllosticta leaf spot": [
+        "🍃 Remove infected leaves.",
+        "🦠 Apply appropriate fungicides.",
+        "💨 Ensure plants have good airflow.",
+        "🔥 Clean up fallen leaves."
+    ],
+    "Tomato_Bacterial_spot": [
+        "🧼 Sanitize tools to prevent spreading.",
+        "🍅 Choose disease-resistant tomato varieties.",
+        "💨 Space plants properly for airflow.",
+        "🚫 Avoid overhead watering."
+    ],
+    "Tomato_Early_blight": [
+        "🍂 Remove infected leaves quickly.",
+        "🦠 Use fungicides like copper-based sprays.",
+        "☀️ Ensure proper sunlight exposure.",
+        "🌾 Rotate crops yearly."
+    ],
+    "Tomato_Late_blight": [
+        "🛑 Remove infected plants immediately.",
+        "💧 Avoid overwatering to prevent spread.",
+        "🦠 Apply fungicide early if needed.",
+        "🔥 Destroy infected plant debris."
+    ],
+    "Tomato_Leaf_Mold": [
+        "💨 Improve airflow between plants.",
+        "🦠 Apply copper fungicides if needed.",
+        "💧 Water at the base, not on leaves.",
+        "🚫 Avoid overcrowding plants."
+    ],
+    "Tomato_mosaic_virus": [
+        "🛑 Remove infected plants immediately.",
+        "👐 Disinfect hands and tools.",
+        "🐞 Control insect vectors.",
+        "🦠 Use virus-resistant varieties."
+    ],
+    "Tomato_Yellow_Leaf_Curl_Virus": [
+        "🐞 Control whiteflies, which spread the virus.",
+        "🕸️ Use insect netting.",
+        "🔥 Remove infected plants.",
+        "🌾 Grow virus-resistant tomato varieties."
     ]
 }
 
