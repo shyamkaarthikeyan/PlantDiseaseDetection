@@ -10,12 +10,13 @@ st.set_page_config(
     layout="centered"
 )
 
-# Hide Streamlit branding (footer & GitHub logo)
+# Hide Streamlit branding (footer, GitHub logo, and "Made with Streamlit")
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
+        .st-emotion-cache-0 {display: none !important;} /* Removes "Made with Streamlit" */
         .stButton>button {
             width: 100%;
             font-size: 18px;
@@ -70,72 +71,6 @@ disease_resolutions = {
         "🦠 Apply copper-based fungicide if needed.",
         "💧 Water at the base to prevent leaf wetness.",
         "🌱 Rotate crops to prevent reinfection."
-    ],
-    "Eggplant_Defect": [
-        "🛑 Check for nutrient imbalances.",
-        "💧 Maintain a consistent watering schedule.",
-        "🌞 Ensure adequate sunlight exposure.",
-        "🍂 Remove affected plant parts."
-    ],
-    "Eggplant_Flea Beetles": [
-        "🔥 Clear plant debris to remove beetle eggs.",
-        "🪴 Apply diatomaceous earth around plants.",
-        "🐞 Introduce beneficial insects like nematodes.",
-        "🌿 Use floating row covers to protect young plants."
-    ],
-    "Eggplant_Fresh": [
-        "✅ The plant is healthy.",
-        "🌱 Maintain regular watering and feeding.",
-        "☀️ Ensure proper sun exposure.",
-        "🍆 Harvest at the right time."
-    ],
-    "Eggplant_Leaf Wilt": [
-        "💧 Ensure proper watering without overwatering.",
-        "🌞 Provide good sun exposure.",
-        "🦠 Check for fungal infections and treat accordingly.",
-        "🐞 Control pests that may cause wilting."
-    ],
-    "Eggplant_Phytophthora Blight": [
-        "🛑 Remove infected plants to prevent spreading.",
-        "💧 Improve drainage to avoid waterlogging.",
-        "🌾 Rotate crops each season.",
-        "🦠 Apply fungicides like metalaxyl."
-    ],
-    "Eggplant_Powdery Mildew": [
-        "💨 Increase airflow around plants.",
-        "🦠 Use sulfur-based fungicides.",
-        "🌞 Expose plants to more sunlight.",
-        "🚫 Avoid overcrowding plants."
-    ],
-    "Eggplant_Tobacco Mosaic Virus": [
-        "🛑 Remove infected plants immediately.",
-        "👐 Disinfect tools after use.",
-        "🐞 Control insect vectors like aphids.",
-        "🦠 Grow virus-resistant varieties."
-    ],
-    "Okra_Alternaria Leaf Spot": [
-        "🍃 Remove affected leaves.",
-        "🦠 Apply fungicide if the infection spreads.",
-        "💨 Space plants for better airflow.",
-        "🌱 Rotate crops to reduce recurrence."
-    ],
-    "Okra_Cercospora Leaf Spot": [
-        "🌿 Prune leaves for better ventilation.",
-        "💧 Avoid wetting leaves while watering.",
-        "🦠 Use copper-based fungicides if needed.",
-        "🔥 Destroy infected plant debris."
-    ],
-    "Okra_Downy Mildew": [
-        "🌞 Increase sunlight exposure.",
-        "🦠 Apply organic fungicides if needed.",
-        "💨 Improve air circulation.",
-        "💧 Water early in the morning."
-    ],
-    "Okra_Healthy": [
-        "✅ Your okra plant is in great condition!",
-        "🌱 Maintain watering and fertilization.",
-        "☀️ Ensure sufficient sun exposure.",
-        "🍽️ Harvest regularly for better yield."
     ],
     "Tomato_Yellow_Leaf_Curl_Virus": [
         "🐞 Control whiteflies, which spread the virus.",
