@@ -10,16 +10,22 @@ st.set_page_config(
     layout="centered"
 )
 
-# Force-hide Streamlit branding (logos, footer, and menu)
+# Hide Streamlit branding (footer & GitHub logo)
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
-        .stDeployButton {display: none !important;} /* Hides GitHub/Streamlit deployment button */
-        .st-emotion-cache-0 {display: none !important;} /* Hides "Made with Streamlit" */
-        .viewerBadge_container__1QSob {display: none !important;} /* Hides Streamlit badge */
-        .css-164nlkn {display: none !important;} /* Hides additional unwanted elements */
+        .stButton>button {
+            width: 100%;
+            font-size: 18px;
+            padding: 10px;
+        }
+        .stImage img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -65,6 +71,72 @@ disease_resolutions = {
         "💧 Water at the base to prevent leaf wetness.",
         "🌱 Rotate crops to prevent reinfection."
     ],
+    "Eggplant_Defect": [
+        "🛑 Check for nutrient imbalances.",
+        "💧 Maintain a consistent watering schedule.",
+        "🌞 Ensure adequate sunlight exposure.",
+        "🍂 Remove affected plant parts."
+    ],
+    "Eggplant_Flea Beetles": [
+        "🔥 Clear plant debris to remove beetle eggs.",
+        "🪴 Apply diatomaceous earth around plants.",
+        "🐞 Introduce beneficial insects like nematodes.",
+        "🌿 Use floating row covers to protect young plants."
+    ],
+    "Eggplant_Fresh": [
+        "✅ The plant is healthy.",
+        "🌱 Maintain regular watering and feeding.",
+        "☀️ Ensure proper sun exposure.",
+        "🍆 Harvest at the right time."
+    ],
+    "Eggplant_Leaf Wilt": [
+        "💧 Ensure proper watering without overwatering.",
+        "🌞 Provide good sun exposure.",
+        "🦠 Check for fungal infections and treat accordingly.",
+        "🐞 Control pests that may cause wilting."
+    ],
+    "Eggplant_Phytophthora Blight": [
+        "🛑 Remove infected plants to prevent spreading.",
+        "💧 Improve drainage to avoid waterlogging.",
+        "🌾 Rotate crops each season.",
+        "🦠 Apply fungicides like metalaxyl."
+    ],
+    "Eggplant_Powdery Mildew": [
+        "💨 Increase airflow around plants.",
+        "🦠 Use sulfur-based fungicides.",
+        "🌞 Expose plants to more sunlight.",
+        "🚫 Avoid overcrowding plants."
+    ],
+    "Eggplant_Tobacco Mosaic Virus": [
+        "🛑 Remove infected plants immediately.",
+        "👐 Disinfect tools after use.",
+        "🐞 Control insect vectors like aphids.",
+        "🦠 Grow virus-resistant varieties."
+    ],
+    "Okra_Alternaria Leaf Spot": [
+        "🍃 Remove affected leaves.",
+        "🦠 Apply fungicide if the infection spreads.",
+        "💨 Space plants for better airflow.",
+        "🌱 Rotate crops to reduce recurrence."
+    ],
+    "Okra_Cercospora Leaf Spot": [
+        "🌿 Prune leaves for better ventilation.",
+        "💧 Avoid wetting leaves while watering.",
+        "🦠 Use copper-based fungicides if needed.",
+        "🔥 Destroy infected plant debris."
+    ],
+    "Okra_Downy Mildew": [
+        "🌞 Increase sunlight exposure.",
+        "🦠 Apply organic fungicides if needed.",
+        "💨 Improve air circulation.",
+        "💧 Water early in the morning."
+    ],
+    "Okra_Healthy": [
+        "✅ Your okra plant is in great condition!",
+        "🌱 Maintain watering and fertilization.",
+        "☀️ Ensure sufficient sun exposure.",
+        "🍽️ Harvest regularly for better yield."
+    ],
     "Tomato_Yellow_Leaf_Curl_Virus": [
         "🐞 Control whiteflies, which spread the virus.",
         "🕸️ Use insect netting.",
@@ -94,15 +166,22 @@ def predict_image_tflite(image_file):
 st.title("🌿 Plant Disease Detection")
 st.write("📸 Upload an image to classify plant diseases.")
 
+# Session state to manage UI flow
+if "uploaded_file" not in st.session_state:
+    st.session_state.uploaded_file = None
+
 uploaded_file = st.file_uploader("📂 Choose an image...", type=["jpg", "jpeg", "png"])
 
-if uploaded_file:
-    image = Image.open(uploaded_file)
+if uploaded_file is not None:
+    st.session_state.uploaded_file = uploaded_file
+
+if st.session_state.uploaded_file:
+    image = Image.open(st.session_state.uploaded_file)
     st.image(image, caption="📷 Uploaded Image", use_container_width=True)
 
     if st.button("🔍 Predict"):
         with st.spinner("🔄 Analyzing..."):
-            result, confidence = predict_image_tflite(uploaded_file)
+            result, confidence = predict_image_tflite(st.session_state.uploaded_file)
         st.success(f"✅ Prediction: {result}")
         st.info(f"📊 Confidence: {confidence}")
 
@@ -110,3 +189,8 @@ if uploaded_file:
         st.subheader("🩺 Disease Resolution")
         for tip in disease_resolutions.get(result, ["No specific resolution available."]):
             st.write(f"- {tip}")
+
+    # Button to go back and upload another image
+    if st.button("🔄 Try Another Image"):
+        st.session_state.uploaded_file = None
+        st.rerun()
