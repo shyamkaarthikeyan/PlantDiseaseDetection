@@ -3,8 +3,12 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-# Page Configuration
-st.set_page_config(page_title="Plant Disease Detection", layout="centered")
+# Set Page Configuration (Title & Icon)
+st.set_page_config(
+    page_title="Plant Disease Detection",
+    page_icon="🌿",
+    layout="centered"
+)
 
 # Custom Styling for Mobile & PC
 st.markdown("""
@@ -19,10 +23,14 @@ st.markdown("""
             height: auto;
             border-radius: 10px;
         }
+        .stSpinner {
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Load the TFLite model
+# Load the TFLite model (Optimized for performance)
 @st.cache_resource
 def load_tflite_model():
     interpreter = tf.lite.Interpreter(model_path="model.tflite")
@@ -31,49 +39,62 @@ def load_tflite_model():
 
 interpreter = load_tflite_model()
 
-# Define class names and their resolutions
+# Define class names
+class_names = [
+    'Background_without_leaves', 'Eggplant_Aphids', 'Eggplant_Cercospora Leaf Spot',
+    'Eggplant_Defect', 'Eggplant_Flea Beetles', 'Eggplant_Fresh', 'Eggplant_Fresh_Leaf',
+    'Eggplant_Leaf Wilt', 'Eggplant_Phytophthora Blight', 'Eggplant_Powdery Mildew',
+    'Eggplant_Tobacco Mosaic Virus', 'Okra_Alternaria Leaf Spot', 'Okra_Cercospora Leaf Spot',
+    'Okra_Downy Mildew', 'Okra_Healthy', 'Okra_Leaf curly virus', 'Okra_Phyllosticta leaf spot',
+    'Tomato_Bacterial_spot', 'Tomato_Early_blight', 'Tomato_healthy', 'Tomato_Late_blight',
+    'Tomato_Leaf_Mold', 'Tomato_mosaic_virus', 'Tomato_Septoria_leaf_spot',
+    'Tomato_Spider_mites Two-spotted_spider_mite', 'Tomato_Target_Spot',
+    'Tomato_Yellow_Leaf_Curl_Virus'
+]
+
+# Disease Resolutions
 disease_resolutions = {
     "Eggplant_Aphids": [
-        "Spray neem oil or insecticidal soap to control aphids.",
-        "Encourage natural predators like ladybugs.",
-        "Avoid excessive nitrogen fertilizers that attract aphids.",
-        "Use reflective mulches to repel aphids."
+        "🌱 Spray neem oil or insecticidal soap to control aphids.",
+        "🐞 Encourage natural predators like ladybugs.",
+        "❌ Avoid excessive nitrogen fertilizers that attract aphids.",
+        "🪴 Use reflective mulches to repel aphids."
     ],
     "Eggplant_Cercospora Leaf Spot": [
-        "Remove infected leaves to prevent further spread.",
-        "Apply copper-based fungicides for control.",
-        "Ensure proper spacing between plants for airflow.",
-        "Avoid overhead watering to reduce moisture."
+        "🌿 Remove infected leaves to prevent further spread.",
+        "🧴 Apply copper-based fungicides for control.",
+        "💨 Ensure proper spacing between plants for airflow.",
+        "🚫 Avoid overhead watering to reduce moisture."
     ],
     "Tomato_Bacterial_spot": [
-        "Use disease-free seeds and resistant varieties.",
-        "Apply copper-based bactericides to slow spread.",
-        "Avoid working with wet plants to prevent bacterial spread.",
-        "Remove and destroy infected plant debris."
+        "🌾 Use disease-free seeds and resistant varieties.",
+        "🔬 Apply copper-based bactericides to slow spread.",
+        "🤲 Avoid working with wet plants to prevent bacterial spread.",
+        "🗑️ Remove and destroy infected plant debris."
     ],
     "Tomato_Early_blight": [
-        "Rotate crops yearly to prevent fungal build-up.",
-        "Apply fungicides such as chlorothalonil or copper sprays.",
-        "Ensure plants receive adequate sunlight and airflow.",
-        "Remove and dispose of infected leaves immediately."
+        "♻️ Rotate crops yearly to prevent fungal build-up.",
+        "🛡️ Apply fungicides such as chlorothalonil or copper sprays.",
+        "🌞 Ensure plants receive adequate sunlight and airflow.",
+        "🚮 Remove and dispose of infected leaves immediately."
     ],
     "Tomato_Yellow_Leaf_Curl_Virus": [
-        "Control whiteflies as they spread the virus.",
-        "Use resistant tomato varieties when available.",
-        "Cover young plants with insect netting.",
-        "Remove and destroy infected plants to prevent spread."
+        "🐛 Control whiteflies as they spread the virus.",
+        "🍅 Use resistant tomato varieties when available.",
+        "🕸️ Cover young plants with insect netting.",
+        "🔥 Remove and destroy infected plants to prevent spread."
     ],
     "Okra_Downy Mildew": [
-        "Improve air circulation by proper spacing.",
-        "Apply fungicides like mancozeb if needed.",
-        "Avoid overhead watering to reduce humidity.",
-        "Use resistant varieties if available."
+        "🌬️ Improve air circulation by proper spacing.",
+        "🛑 Apply fungicides like mancozeb if needed.",
+        "💦 Avoid overhead watering to reduce humidity.",
+        "🌱 Use resistant varieties if available."
     ],
     "Okra_Leaf curly virus": [
-        "Remove and destroy infected plants immediately.",
-        "Control aphid populations as they spread the virus.",
-        "Use reflective mulch to deter aphids.",
-        "Avoid planting near virus-infected crops."
+        "🚮 Remove and destroy infected plants immediately.",
+        "🐞 Control aphid populations as they spread the virus.",
+        "🪴 Use reflective mulch to deter aphids.",
+        "🚫 Avoid planting near virus-infected crops."
     ]
 }
 
@@ -99,7 +120,8 @@ def predict_image_tflite(image_file):
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
     # Get predicted class and confidence
-    pred_class = max(disease_resolutions.keys(), key=lambda x: x in class_names)  # Ensuring it's mapped
+    pred_index = np.argmax(output_data[0])  # Get highest probability class index
+    pred_class = class_names[pred_index]  # Get actual class name
     pred_confidence = f"{round(100 * np.max(output_data[0]), 2)}%"
 
     return pred_class, pred_confidence
@@ -122,10 +144,10 @@ if not st.session_state.image_uploaded:
 
 else:
     image = Image.open(st.session_state.uploaded_file)
-    st.image(image, caption="Uploaded Image", use_container_width=True)
+    st.image(image, caption="📷 Uploaded Image", use_container_width=True)
 
     if st.button("🔍 Predict"):
-        with st.spinner("Analyzing..."):
+        with st.spinner("🔄 Analyzing..."):
             result, confidence = predict_image_tflite(st.session_state.uploaded_file)
         st.success(f"✅ Prediction: {result}")
         st.info(f"📊 Confidence: {confidence}")
