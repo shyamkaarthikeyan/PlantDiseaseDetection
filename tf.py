@@ -10,23 +10,16 @@ st.set_page_config(
     layout="centered"
 )
 
-# Hide Streamlit branding (footer, GitHub logo, and "Made with Streamlit")
+# Force-hide Streamlit branding (logos, footer, and menu)
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
-        .st-emotion-cache-0 {display: none !important;} /* Removes "Made with Streamlit" */
-        .stButton>button {
-            width: 100%;
-            font-size: 18px;
-            padding: 10px;
-        }
-        .stImage img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
+        .stDeployButton {display: none !important;} /* Hides GitHub/Streamlit deployment button */
+        .st-emotion-cache-0 {display: none !important;} /* Hides "Made with Streamlit" */
+        .viewerBadge_container__1QSob {display: none !important;} /* Hides Streamlit badge */
+        .css-164nlkn {display: none !important;} /* Hides additional unwanted elements */
     </style>
 """, unsafe_allow_html=True)
 
@@ -101,22 +94,15 @@ def predict_image_tflite(image_file):
 st.title("🌿 Plant Disease Detection")
 st.write("📸 Upload an image to classify plant diseases.")
 
-# Session state to manage UI flow
-if "uploaded_file" not in st.session_state:
-    st.session_state.uploaded_file = None
-
 uploaded_file = st.file_uploader("📂 Choose an image...", type=["jpg", "jpeg", "png"])
 
-if uploaded_file is not None:
-    st.session_state.uploaded_file = uploaded_file
-
-if st.session_state.uploaded_file:
-    image = Image.open(st.session_state.uploaded_file)
+if uploaded_file:
+    image = Image.open(uploaded_file)
     st.image(image, caption="📷 Uploaded Image", use_container_width=True)
 
     if st.button("🔍 Predict"):
         with st.spinner("🔄 Analyzing..."):
-            result, confidence = predict_image_tflite(st.session_state.uploaded_file)
+            result, confidence = predict_image_tflite(uploaded_file)
         st.success(f"✅ Prediction: {result}")
         st.info(f"📊 Confidence: {confidence}")
 
@@ -124,8 +110,3 @@ if st.session_state.uploaded_file:
         st.subheader("🩺 Disease Resolution")
         for tip in disease_resolutions.get(result, ["No specific resolution available."]):
             st.write(f"- {tip}")
-
-    # Button to go back and upload another image
-    if st.button("🔄 Try Another Image"):
-        st.session_state.uploaded_file = None
-        st.rerun()
