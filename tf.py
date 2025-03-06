@@ -132,16 +132,14 @@ if st.session_state.uploaded_file:
         st.info(f"📊 Confidence: {confidence}")
 
         # Show Disease Resolution if available
+        st.subheader("🩺 Disease Resolution")
         if result in disease_resolutions:
-            st.subheader("🩺 Disease Resolution")
             for tip in disease_resolutions[result]:
                 st.write(f"- {tip}")
+        else:
+            st.write("No specific resolution available for this disease.")
 
     # Button to go back and upload another image
     if st.button("🔄 Try Another Image"):
         st.session_state.uploaded_file = None
         st.rerun()  # Refresh UI to allow a new upload
-
-# Footer
-st.markdown("---")
-st.markdown("<p style='text-align: center;'>🌱 Built with ❤️ using Streamlit</p>", unsafe_allow_html=True)
