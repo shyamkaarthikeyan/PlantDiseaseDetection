@@ -10,9 +10,12 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom Styling for Mobile & PC
+# Hide Streamlit branding (footer & GitHub logo)
 st.markdown("""
     <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
         .stButton>button {
             width: 100%;
             font-size: 18px;
@@ -134,48 +137,6 @@ disease_resolutions = {
         "☀️ Ensure sufficient sun exposure.",
         "🍽️ Harvest regularly for better yield."
     ],
-    "Okra_Leaf curly virus": [
-        "🛑 Remove and destroy infected plants.",
-        "🐞 Control whiteflies, which spread the virus.",
-        "🕸️ Use insect-proof netting.",
-        "🌱 Grow virus-resistant okra varieties."
-    ],
-    "Okra_Phyllosticta leaf spot": [
-        "🍃 Remove infected leaves.",
-        "🦠 Apply appropriate fungicides.",
-        "💨 Ensure plants have good airflow.",
-        "🔥 Clean up fallen leaves."
-    ],
-    "Tomato_Bacterial_spot": [
-        "🧼 Sanitize tools to prevent spreading.",
-        "🍅 Choose disease-resistant tomato varieties.",
-        "💨 Space plants properly for airflow.",
-        "🚫 Avoid overhead watering."
-    ],
-    "Tomato_Early_blight": [
-        "🍂 Remove infected leaves quickly.",
-        "🦠 Use fungicides like copper-based sprays.",
-        "☀️ Ensure proper sunlight exposure.",
-        "🌾 Rotate crops yearly."
-    ],
-    "Tomato_Late_blight": [
-        "🛑 Remove infected plants immediately.",
-        "💧 Avoid overwatering to prevent spread.",
-        "🦠 Apply fungicide early if needed.",
-        "🔥 Destroy infected plant debris."
-    ],
-    "Tomato_Leaf_Mold": [
-        "💨 Improve airflow between plants.",
-        "🦠 Apply copper fungicides if needed.",
-        "💧 Water at the base, not on leaves.",
-        "🚫 Avoid overcrowding plants."
-    ],
-    "Tomato_mosaic_virus": [
-        "🛑 Remove infected plants immediately.",
-        "👐 Disinfect hands and tools.",
-        "🐞 Control insect vectors.",
-        "🦠 Use virus-resistant varieties."
-    ],
     "Tomato_Yellow_Leaf_Curl_Virus": [
         "🐞 Control whiteflies, which spread the virus.",
         "🕸️ Use insect netting.",
@@ -186,28 +147,17 @@ disease_resolutions = {
 
 # Function to preprocess and predict
 def predict_image_tflite(image_file):
-    img = Image.open(image_file)
-    img = img.convert("RGB")
-    img = img.resize((160, 160))
-    img_array = np.array(img, dtype=np.float32)
-    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    img = Image.open(image_file).convert("RGB").resize((160, 160))
+    img_array = np.expand_dims(np.array(img, dtype=np.float32), axis=0)
 
     # Get model input/output details
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-
-    # Set input tensor
-    interpreter.set_tensor(input_details[0]['index'], img_array)
-
-    # Run inference
+    interpreter.set_tensor(interpreter.get_input_details()[0]['index'], img_array)
     interpreter.invoke()
-
-    # Get output tensor
-    output_data = interpreter.get_tensor(output_details[0]['index'])
+    output_data = interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
 
     # Get predicted class and confidence
-    pred_index = np.argmax(output_data[0])  # Get highest probability class index
-    pred_class = class_names[pred_index]  # Get actual class name
+    pred_index = np.argmax(output_data[0])
+    pred_class = class_names[pred_index]
     pred_confidence = f"{round(100 * np.max(output_data[0]), 2)}%"
 
     return pred_class, pred_confidence
@@ -237,13 +187,10 @@ if st.session_state.uploaded_file:
 
         # Show Disease Resolution if available
         st.subheader("🩺 Disease Resolution")
-        if result in disease_resolutions:
-            for tip in disease_resolutions[result]:
-                st.write(f"- {tip}")
-        else:
-            st.write("No specific resolution available for this disease.")
+        for tip in disease_resolutions.get(result, ["No specific resolution available."]):
+            st.write(f"- {tip}")
 
     # Button to go back and upload another image
     if st.button("🔄 Try Another Image"):
         st.session_state.uploaded_file = None
-        st.rerun()  # Refresh UI to allow a new upload
+        st.rerun()
