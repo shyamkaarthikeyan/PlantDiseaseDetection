@@ -60,35 +60,17 @@ disease_resolutions = {
         "❌ Avoid excessive nitrogen fertilizers that attract aphids.",
         "🪴 Use reflective mulches to repel aphids."
     ],
-    "Eggplant_Cercospora Leaf Spot": [
-        "🌿 Remove infected leaves to prevent further spread.",
-        "🧴 Apply copper-based fungicides for control.",
-        "💨 Ensure proper spacing between plants for airflow.",
-        "🚫 Avoid overhead watering to reduce moisture."
-    ],
     "Tomato_Bacterial_spot": [
         "🌾 Use disease-free seeds and resistant varieties.",
         "🔬 Apply copper-based bactericides to slow spread.",
         "🤲 Avoid working with wet plants to prevent bacterial spread.",
         "🗑️ Remove and destroy infected plant debris."
     ],
-    "Tomato_Early_blight": [
-        "♻️ Rotate crops yearly to prevent fungal build-up.",
-        "🛡️ Apply fungicides such as chlorothalonil or copper sprays.",
-        "🌞 Ensure plants receive adequate sunlight and airflow.",
-        "🚮 Remove and dispose of infected leaves immediately."
-    ],
     "Tomato_Yellow_Leaf_Curl_Virus": [
         "🐛 Control whiteflies as they spread the virus.",
         "🍅 Use resistant tomato varieties when available.",
         "🕸️ Cover young plants with insect netting.",
         "🔥 Remove and destroy infected plants to prevent spread."
-    ],
-    "Okra_Downy Mildew": [
-        "🌬️ Improve air circulation by proper spacing.",
-        "🛑 Apply fungicides like mancozeb if needed.",
-        "💦 Avoid overhead watering to reduce humidity.",
-        "🌱 Use resistant varieties if available."
     ],
     "Okra_Leaf curly virus": [
         "🚮 Remove and destroy infected plants immediately.",
@@ -131,18 +113,15 @@ st.title("🌿 Plant Disease Detection")
 st.write("📸 Upload an image to classify plant diseases.")
 
 # Session state to manage UI flow
-if "image_uploaded" not in st.session_state:
-    st.session_state.image_uploaded = False
+if "uploaded_file" not in st.session_state:
+    st.session_state.uploaded_file = None
 
-if not st.session_state.image_uploaded:
-    uploaded_file = st.file_uploader("📂 Choose an image...", type=["jpg", "jpeg", "png"])
-    
-    if uploaded_file is not None:
-        st.session_state.image_uploaded = True
-        st.session_state.uploaded_file = uploaded_file
-        st.experimental_rerun()  # Refresh UI to show prediction button
+uploaded_file = st.file_uploader("📂 Choose an image...", type=["jpg", "jpeg", "png"])
 
-else:
+if uploaded_file is not None:
+    st.session_state.uploaded_file = uploaded_file
+
+if st.session_state.uploaded_file:
     image = Image.open(st.session_state.uploaded_file)
     st.image(image, caption="📷 Uploaded Image", use_container_width=True)
 
@@ -160,9 +139,8 @@ else:
 
     # Button to go back and upload another image
     if st.button("🔄 Try Another Image"):
-        st.session_state.image_uploaded = False
         st.session_state.uploaded_file = None
-        st.experimental_rerun()  # Refresh UI to allow a new upload
+        st.rerun()  # Refresh UI to allow a new upload
 
 # Footer
 st.markdown("---")
